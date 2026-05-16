@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DiaPredict AI</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    overflow-x:hidden;
+    background:#070510;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    padding:40px 20px;
+}
+
+
+/* ================= BACKGROUND ================= */
+
+#tsparticles{
+    position:fixed;
+    width:100%;
+    height:100%;
+    z-index:-5;
+}
+
+.aurora{
+    position:fixed;
+    width:700px;
+    height:700px;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:-4;
+    opacity:0.5;
+    animation:floatBlob 18s infinite alternate ease-in-out;
+}
+
+.a1{
+    background:#00f2fe;
+    top:-150px;
+    left:-100px;
+}
+
+.a2{
+    background:#7d5fff;
+    right:-120px;
+    bottom:-150px;
+    animation-delay:4s;
+}
+
+@keyframes floatBlob{
+    0%{
+        transform:translate(0,0) scale(1);
+    }
+    100%{
+        transform:translate(100px,-50px) scale(1.2);
+    }
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard{
+    width:100%;
+    max-width:850px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(20px);
+    border-radius:30px;
+    padding:40px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:
+    0 20px 60px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.dashboard::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(0,242,254,0.15), transparent 30%);
+    pointer-events:none;
+}
+
+.scan-line{
+    position:absolute;
+    width:100%;
+    height:3px;
+    background:linear-gradient(to right, transparent, #00f2fe, transparent);
+    top:-10px;
+    left:0;
+    opacity:0;
+    pointer-events:none;
+}
+
+@keyframes scan{
+    0%{top:-10px;}
+    100%{top:100%;}
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.logo{
+    width:80px;
+    height:80px;
+    margin:auto;
+    border-radius:20px;
+    background:linear-gradient(135deg,#ff0000,#ff0000);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:2rem;
+    color:#070510;
+    margin-bottom:20px;
+    box-shadow:0 0 35px rgba(0,242,254,0.5);
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%,100%{
+        transform:scale(1);
+        box-shadow:0 0 25px rgba(2, 244, 30, 0.3);
+    }
+    50%{
+        transform:scale(1.05);
+        box-shadow:0 0 45px rgba(13, 255, 0, 0.6);
+    }
+}
+
+.header h1{
+    font-size:2.2rem;
+    margin-bottom:10px;
+    background:linear-gradient(to right,#fff,#8ec5fc);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.header p{
+    color:#9fa6d1;
+    letter-spacing:1px;
+}
+
+/* ================= GRID ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.full{
+    grid-column:span 2;
+}
+
+/* ================= INPUTS ================= */
+
+.field{
+    position:relative;
+}
+
+.field label{
+    display:block;
+    margin-bottom:10px;
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:#b4b6d5;
+}
+
+.input-wrap{
+    position:relative;
+}
+
+.input-wrap i{
+    position:absolute;
+    left:15px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#7c84b8;
+    transition:0.3s;
+}
+
+.field input{
+    width:100%;
+    padding:16px 16px 16px 48px;
+    border:none;
+    outline:none;
+    border-radius:16px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    color:white;
+    font-size:1rem;
+    transition:0.4s;
+}
+
+.field input:focus{
+    transform:translateY(-2px) scale(1.02);
+    border-color:#00f2fe;
+    box-shadow:
+    0 0 0 1px #00f2fe,
+    0 0 30px rgba(0,242,254,0.35);
+}
+
+.field input:focus + i{
+    color:#00f2fe;
+}
+
+/* animated border */
+
+.field::before{
+    content:'';
+    position:absolute;
+    inset:-1px;
+    border-radius:18px;
+    padding:1px;
+    /* background:linear-gradient(90deg,#00f2fe,#7d5fff,#00f2fe); */
+    background-size:300% 300%;
+    animation:borderMove 6s linear infinite;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    opacity:0;
+    transition:0.4s;
+}
+
+.field:focus-within::before{
+    opacity:1;
+}
+
+@keyframes borderMove{
+    0%{background-position:0% 50%;}
+    100%{background-position:100% 50%;}
+}
+
+/* ================= BUTTON ================= */
+
+.btn-wrap{
+    grid-column:span 2;
+    margin-top:10px;
+}
+
+button{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:18px;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    background:linear-gradient(135deg,#00f2fe,#4facfe);
+    color:#061019;
+    position:relative;
+    overflow:hidden;
+    transition:0.3s;
+    box-shadow:0 10px 35px rgba(0,242,254,0.35);
+}
+
+button:hover{
+    transform:translateY(-5px) scale(1.02);
+    box-shadow:0 20px 45px rgba(0,242,254,0.5);
+}
+
+button::before{
+    content:'';
+    position:absolute;
+    width:150px;
+    height:150%;
+    background:rgba(255,255,255,0.35);
+    transform:rotate(25deg);
+    top:-30px;
+    left:-200px;
+    transition:1s;
+}
+
+button:hover::before{
+    left:120%;
+}
+
+/* ================= LOADER ================= */
+
+.loader-area{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    margin-top:30px;
+}
+
+.radar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:2px solid rgba(0,242,254,0.2);
+    position:relative;
+    overflow:hidden;
+}
+
+.radar::before{
+    content:'';
+    position:absolute;
+    width:50%;
+    height:50%;
+    background:linear-gradient(90deg,transparent,rgba(0,242,254,0.7));
+    top:50%;
+    left:50%;
+    transform-origin:top left;
+    animation:rotateRadar 1.4s linear infinite;
+}
+
+@keyframes rotateRadar{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+.loader-text{
+    margin-top:20px;
+    letter-spacing:3px;
+    color:#00f2fe;
+    animation:blink 1.5s infinite;
+}
+
+@keyframes blink{
+    0%,100%{opacity:1;}
+    50%{opacity:0.3;}
+}
+
+/* ================= RESULT ================= */
+
+.result{
+    margin-top:30px;
+    padding:28px;
+    border-radius:22px;
+    display:none;
+    align-items:center;
+    gap:20px;
+    animation:resultIn 0.8s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes resultIn{
+    from{
+        opacity:0;
+        transform:translateY(30px) scale(0.9);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+.result-icon{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:1.8rem;
+}
+
+.result h2{
+    margin-bottom:8px;
+}
+
+.safe{
+    background:rgba(46,213,115,0.1);
+    border:1px solid rgba(46,213,115,0.3);
+}
+
+.safe .result-icon{
+    background:rgba(46,213,115,0.2);
+    color:#2ed573;
+    box-shadow:0 0 25px rgba(46,213,115,0.4);
+}
+
+.danger{
+    background:rgba(255,75,75,0.1);
+    border:1px solid rgba(255,75,75,0.3);
+}
+
+.danger .result-icon{
+    background:rgba(255,75,75,0.2);
+    color:#ff4b4b;
+    box-shadow:0 0 25px rgba(255,75,75,0.4);
+}
+
+.counter{
+    font-size:2rem;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+/* ================= FLOATING CARDS ================= */
+
+.floating-card{
+    position:absolute;
+    width:220px;
+    padding:16px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    backdrop-filter:blur(20px);
+    color:#c9d0ff;
+    animation:floatCard 6s infinite ease-in-out;
+}
+
+.fc1{
+    top:80px;
+    left:50px;
+}
+
+.fc2{
+    bottom:100px;
+    right:50px;
+    animation-delay:2s;
+}
+
+@keyframes floatCard{
+    0%,100%{
+        transform:translateY(0px);
+    }
+    50%{
+        transform:translateY(-10px);
+    }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:700px){
+
+.grid{
+    grid-template-columns:1fr;
+}
+
+.full,
+.btn-wrap{
+    grid-column:span 1;
+}
+
+.dashboard{
+    padding:25px;
+}
+
+.floating-card{
+    display:flex;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<div id="tsparticles"></div>
+<div class="aurora a1"></div>
+<div class="aurora a2"></div>
+
+<div class="floating-card fc1">
+    <h4><i class="fa-solid fa-heart-pulse"></i> AI Biometrics</h4>
+    <p style="margin-top:10px;font-size:0.9rem;">Neural pattern monitoring active</p>
+</div>
+
+<div class="floating-card fc2">
+    <h4><i class="fa-solid fa-dna"></i> Deep Analysis</h4>
+    <p style="margin-top:10px;font-size:0.9rem;">Predictive health intelligence system</p>
+</div>
+
+<div class="dashboard" id="dashboard">
+
+<div class="scan-line" id="scanLine"></div>
+
+<div class="header">
+    <div class="logo">
+        <i class="fa-solid fa-heart-pulse"></i>
+    </div>
+
+    <h1>DiaPredict AI</h1>
+    <p>Advanced AI Diagnostic Intelligence</p>
+</div>
+
+<form id="predictionForm" action="/predict" method="post">
+
+<div class="grid">
+
+<div class="field">
+<label>Pregnancies</label>
+<div class="input-wrap">
+<input type="number" name="Pregnancies" placeholder="e.g. 2" required />
+<i class="fa-solid fa-baby"></i>
+</div>
+</div>
+
+<div class="field">
+<label>Glucose Level</label>
+<div class="input-wrap">
+<input type="number" name="Glucose" placeholder="e.g. 80" required />
+<i class="fa-solid fa-droplet"></i>
+</div>
+</div>
+
+<div class="field">
+<label>Blood Pressure</label>
+<div class="input-wrap">
+<input type="number" name="BloodPressure" placeholder="e.g. 120" required />
+<i class="fa-solid fa-heart"></i>
+</div>
+</div>
+
+<div class="field">
+<label>Skin Thickness</label>
+<div class="input-wrap">
+<input type="number" name="SkinThickness" placeholder="e.g. 20" required />
+<i class="fa-solid fa-ruler"></i>
+</div>
+</div>
+
+<div class="field">
+<label>Insulin</label>
+<div class="input-wrap">
+<input type="number" name="Insulin" placeholder="e.g. 79" required />
+<i class="fa-solid fa-syringe"></i>
+</div>
+</div>
+
+<div class="field">
+<label>BMI</label>
+<div class="input-wrap">
+<input type="number" step="0.1" name="BMI" placeholder="e.g. 26.5" required />
+<i class="fa-solid fa-weight-scale"></i>
+</div>
+</div>
+
+<div class="field full">
+<label>Diabetes Pedigree Function</label>
+<div class="input-wrap">
+<input type="number" step="0.001" name="DiabetesPedigreeFunction" placeholder="e.g. 0.375" required />
+<i class="fa-solid fa-dna"></i>
+</div>
+</div>
+
+<div class="field full">
+<label>Age</label>
+<div class="input-wrap">
+<input type="number" name="Age" placeholder="e.g. 32" required />
+<i class="fa-solid fa-calendar"></i>
+</div>
+</div>
+
+<div class="btn-wrap">
+<button type="submit" id="submitBtn">
+Run Neural Diagnosis
+</button>
+</div>
+
+</div>
+
+</form>
+
+<div class="loader-area" id="loaderArea">
+    <div class="radar"></div>
+    <div class="loader-text">ANALYZING BIOMETRICS...</div>
+</div>
+
+{% if prediction_text %}
+<div class="result {% if prediction_text == 'Diabetic' %}danger{% else %}safe{% endif %}" id="resultBox">
+    <div class="result-icon">
+        {% if prediction_text == 'Diabetic' %}
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {% else %}
+        <i class="fa-solid fa-circle-check"></i>
+        {% endif %}
+    </div>
+
+    <div>
+        {% if prediction_text == 'Diabetic' %}
+        <h2>High Risk Detected</h2>
+        <p>AI analysis indicates diabetic risk patterns.</p>
+        <div class="counter" id="counter">92%</div>
+        {% else %}
+        <h2>Low Risk Detected</h2>
+        <p>AI analysis indicates healthy biometric patterns.</p>
+        <div class="counter" id="counter">12%</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+</div>
+
+<script>
+
+/* ================= PARTICLES ================= */
+
+tsParticles.load("tsparticles", {
+    particles: {
+        number: { value: 110 },
+        color: { value: "#00f2fe" },
+        links: {
+            enable: true,
+            color: "#00f2fe",
+            opacity: 0.15,
+            distance: 130
+        },
+        move: {
+            enable: true,
+            speed: 3.5
+        },
+        opacity: { value: 0.8 },
+        size: {
+            value: { min: 1, max: 3 }
+        }
+    }
+});
+
+/* ================= TILT ================= */
+
+VanillaTilt.init(document.querySelector(".dashboard"), {
+    max: 8,
+    speed: 500,
+    glare:true,
+    "max-glare":0.15
+});
+
+/* ================= CURSOR GLOW ================= */
+
+const dashboard = document.querySelector('.dashboard');
+
+window.addEventListener('mousemove', (e)=>{
+    const rect = dashboard.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    dashboard.style.setProperty('--x', `${x}px`);
+    dashboard.style.setProperty('--y', `${y}px`);
+});
+
+/* ================= GSAP ENTRANCE ================= */
+
+gsap.from('.dashboard', {
+    duration:1,
+    scale:0.9,
+    opacity:0,
+    y:40,
+    ease:'power4.out'
+});
+
+gsap.from('.field', {
+    duration:1,
+    opacity:0,
+    y:20,
+    stagger:0.08,
+    delay:0.3,
+    ease:'power3.out'
+});
+
+/* ================= FORM SUBMIT & RESULTS DISPLAY ================= */
+
+const form = document.getElementById('predictionForm');
+const loader = document.getElementById('loaderArea');
+const scanLine = document.getElementById('scanLine');
+const resultBox = document.getElementById('resultBox');
+
+// Check if Flask just returned and rendered the result box component
+if (resultBox) {
+    resultBox.style.display = 'flex';
+    // Smooth scroll down to the diagnosis result for clean visibility on small displays
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+form.addEventListener('submit', function(e){
+    // If our processing loop is complete, allow the data to transit to Flask natively
+    if (form.dataset.ready === "true") {
+        return;
+    }
+
+    e.preventDefault();
+
+    loader.style.display = 'flex';
+    scanLine.style.opacity = '1';
+    scanLine.style.animation = 'scan 1.2s linear infinite';
+
+    // Hide any old result cards from previous runs during a new analysis
+    if (resultBox) {
+        resultBox.style.display = 'none';
+    }
+
+    gsap.to(form, {
+        opacity:0.2,
+        filter:'blur(4px)',
+        duration:0.5
+    });
+
+    gsap.from(loader, {
+        opacity:0,
+        scale:0.8,
+        duration:0.5
+    });
+
+    setTimeout(() => {
+        scanLine.style.animation = 'none';
+        scanLine.style.opacity = '0';
+        
+        // Flag form ready status to skip preventDefault on the second automated call
+        form.dataset.ready = "true";
+        form.submit();
+    }, 3000);
+
+});
+
+/* ================= MAGNETIC BUTTON ================= */
+
+const button = document.getElementById('submitBtn');
+
+button.addEventListener('mousemove', (e)=>{
+
+    const rect = button.getBoundingClientRect();
+
+    const x = e.clientX - rect.left - rect.width/2;
+    const y = e.clientY - rect.top - rect.height/2;
+
+    gsap.to(button, {
+        x:x * 0.15,
+        y:y * 0.25,
+        duration:0.3
+    });
+
+});
+
+button.addEventListener('mouseleave', ()=>{
+
+    gsap.to(button, {
+        x:0,
+        y:0,
+        duration:0.4
+    });
+
+});
+
+</script>
+
+</body>
+</html>
